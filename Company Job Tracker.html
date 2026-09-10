@@ -1,0 +1,1404 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Company Job Tracker</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            margin: 0;
+            padding: 25px;
+        }
+
+        .container {
+            max-width: 1500px;
+            margin: auto;
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.10);
+        }
+
+        h1 {
+            text-align: center;
+            margin: 0;
+            color: #263238;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #777;
+            margin-top: 8px;
+            margin-bottom: 25px;
+        }
+
+
+        /* =========================
+           DASHBOARD
+        ========================= */
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .card {
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+        }
+
+        .card h3 {
+            margin: 0;
+            font-size: 13px;
+            color: #666;
+        }
+
+        .card p {
+            margin: 8px 0 0;
+            font-size: 25px;
+            font-weight: bold;
+            color: #263238;
+        }
+
+
+        /* =========================
+           CONTROLS
+        ========================= */
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .controls input,
+        .controls select {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .search {
+            flex: 1;
+            min-width: 250px;
+        }
+
+        button {
+            padding: 10px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        button:hover {
+            opacity: 0.85;
+        }
+
+        .select-btn {
+            background: #1976d2;
+            color: white;
+        }
+
+        .clear-btn {
+            background: #d32f2f;
+            color: white;
+        }
+
+        .export-btn {
+            background: #388e3c;
+            color: white;
+        }
+
+
+        /* =========================
+           TABLE
+        ========================= */
+
+        .table-container {
+            overflow-x: auto;
+            max-height: 650px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1050px;
+        }
+
+        th {
+            background: #263238;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            position: sticky;
+            top: 0;
+            z-index: 5;
+        }
+
+        td {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            vertical-align: middle;
+        }
+
+        tr:hover {
+            background: #f5f7fa;
+        }
+
+        .company-name {
+            font-weight: bold;
+        }
+
+
+        /* =========================
+           CHECKBOX
+        ========================= */
+
+        input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+
+        /* =========================
+           COMPANY TYPE
+        ========================= */
+
+        .product {
+            background: #e8f5e9;
+            color: #2e7d32;
+            padding: 5px 9px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        .service {
+            background: #fff3e0;
+            color: #e65100;
+            padding: 5px 9px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        .finance {
+            background: #e3f2fd;
+            color: #1565c0;
+            padding: 5px 9px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+
+        /* =========================
+           STATUS
+        ========================= */
+
+        .status {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            min-width: 125px;
+            cursor: pointer;
+        }
+
+
+        /* =========================
+           REMARK
+        ========================= */
+
+        .remark {
+            width: 100%;
+            min-width: 250px;
+            min-height: 45px;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            resize: vertical;
+            font-family: Arial, sans-serif;
+        }
+
+
+        /* =========================
+           SAVE MESSAGE
+        ========================= */
+
+        .saved {
+            color: #2e7d32;
+            font-size: 13px;
+            text-align: right;
+            margin-top: 10px;
+        }
+
+
+        /* =========================
+           FOOTER
+        ========================= */
+
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            color: #888;
+            font-size: 13px;
+        }
+
+
+        /* =========================
+           RESPONSIVE
+        ========================= */
+
+        @media (max-width: 1100px) {
+
+            .dashboard {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+        }
+
+        @media (max-width: 600px) {
+
+            body {
+                padding: 10px;
+            }
+
+            .container {
+                padding: 15px;
+            }
+
+            .dashboard {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="container">
+
+
+    <h1>📋 Company Job Tracker</h1>
+
+    <div class="subtitle">
+        Track companies, applications, interviews and remarks
+    </div>
+
+
+    <!-- =========================
+         DASHBOARD
+    ========================== -->
+
+    <div class="dashboard">
+
+        <div class="card">
+            <h3>Total Companies</h3>
+            <p id="totalCount">0</p>
+        </div>
+
+        <div class="card">
+            <h3>Selected</h3>
+            <p id="selectedCount">0</p>
+        </div>
+
+        <div class="card">
+            <h3>Applied</h3>
+            <p id="appliedCount">0</p>
+        </div>
+
+        <div class="card">
+            <h3>Interview</h3>
+            <p id="interviewCount">0</p>
+        </div>
+
+        <div class="card">
+            <h3>Job Selected</h3>
+            <p id="jobSelectedCount">0</p>
+        </div>
+
+        <div class="card">
+            <h3>Rejected</h3>
+            <p id="rejectedCount">0</p>
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         SEARCH / FILTER
+    ========================== -->
+
+    <div class="controls">
+
+        <input
+            type="text"
+            id="search"
+            class="search"
+            placeholder="🔍 Search company..."
+            onkeyup="filterTable()"
+        >
+
+
+        <select
+            id="typeFilter"
+            onchange="filterTable()"
+        >
+
+            <option value="All">
+                All Company Types
+            </option>
+
+            <option value="Product">
+                Product
+            </option>
+
+            <option value="IT Services">
+                IT Services
+            </option>
+
+            <option value="IT Services & Consulting">
+                IT Services & Consulting
+            </option>
+
+            <option value="Consulting">
+                Consulting
+            </option>
+
+            <option value="Banking">
+                Banking
+            </option>
+
+            <option value="Finance">
+                Finance
+            </option>
+
+            <option value="IT Services & Analytics">
+                IT Services & Analytics
+            </option>
+
+            <option value="Technology / Product">
+                Technology / Product
+            </option>
+
+            <option value="IT Consulting">
+                IT Consulting
+            </option>
+
+            <option value="Digital Consulting">
+                Digital Consulting
+            </option>
+
+            <option value="Software & IT Services">
+                Software & IT Services
+            </option>
+
+            <option value="IT Services & BPO">
+                IT Services & BPO
+            </option>
+
+            <option value="BPO / Customer Experience">
+                BPO / Customer Experience
+            </option>
+
+            <option value="Business Process Services">
+                Business Process Services
+            </option>
+
+        </select>
+
+
+        <select
+            id="statusFilter"
+            onchange="filterTable()"
+        >
+
+            <option value="All">
+                All Status
+            </option>
+
+            <option value="Not Applied">
+                Not Applied
+            </option>
+
+            <option value="Applied">
+                Applied
+            </option>
+
+            <option value="Interview">
+                Interview
+            </option>
+
+            <option value="Selected">
+                Selected
+            </option>
+
+            <option value="Rejected">
+                Rejected
+            </option>
+
+        </select>
+
+
+        <button
+            class="select-btn"
+            onclick="selectAll()"
+        >
+            ☑ Select All
+        </button>
+
+
+        <button
+            class="clear-btn"
+            onclick="clearAllData()"
+        >
+            🗑 Clear All Data
+        </button>
+
+
+        <button
+            class="export-btn"
+            onclick="exportData()"
+        >
+            📥 Export CSV
+        </button>
+
+    </div>
+
+
+    <!-- =========================
+         TABLE
+    ========================== -->
+
+    <div class="table-container">
+
+        <table id="companyTable">
+
+            <thead>
+
+                <tr>
+
+                    <th>Select</th>
+
+                    <th>#</th>
+
+                    <th>Company</th>
+
+                    <th>Company Type</th>
+
+                    <th>Status</th>
+
+                    <th>Remark</th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody id="companyBody"></tbody>
+
+        </table>
+
+    </div>
+
+
+    <div
+        class="saved"
+        id="saveMessage"
+    >
+        ✓ Data automatically saved
+    </div>
+
+
+    <div class="footer">
+
+        Your data is stored locally in your browser.
+        Refreshing the page will not remove it.
+
+    </div>
+
+
+</div>
+
+
+<script>
+
+
+/* =====================================================
+   COMPANY LIST
+===================================================== */
+
+const companies = [
+
+    // =========================
+    // IT SERVICES
+    // =========================
+
+    ["TCS", "IT Services"],
+    ["Infosys", "IT Services"],
+    ["Wipro", "IT Services"],
+    ["HCLTech", "IT Services"],
+    ["Cognizant", "IT Services"],
+    ["Accenture", "IT Services & Consulting"],
+    ["Capgemini", "IT Services & Consulting"],
+    ["Tech Mahindra", "IT Services"],
+    ["LTIMindtree", "IT Services"],
+    ["Mphasis", "IT Services"],
+    ["Hexaware Technologies", "IT Services"],
+    ["Persistent Systems", "IT Services"],
+    ["Coforge", "IT Services"],
+    ["Birlasoft", "IT Services"],
+    ["Cyient", "IT Services"],
+    ["KPIT Technologies", "IT Services"],
+    ["Sonata Software", "IT Services"],
+    ["Zensar Technologies", "IT Services"],
+    ["Virtusa", "IT Services"],
+    ["DXC Technology", "IT Services"],
+    ["NTT DATA", "IT Services"],
+    ["CGI", "IT Services"],
+    ["Fujitsu", "IT Services"],
+    ["Genpact", "IT Services"],
+    ["EXL", "IT Services & Analytics"],
+    ["UST", "IT Services"],
+    ["Mastek", "IT Services"],
+    ["eClerx", "IT Services"],
+    ["Saksoft", "IT Services"],
+    ["Newgen Software", "Software & IT Services"],
+    ["Sutherland", "IT Services & BPO"],
+    ["Concentrix", "IT Services & BPO"],
+    ["Foundever", "BPO / Customer Experience"],
+    ["WNS", "Business Process Services"],
+    ["Teleperformance", "BPO / Customer Experience"],
+    ["NTT Ltd.", "IT Services"],
+    ["Atos", "IT Services"],
+    ["EPAM Systems", "IT Services"],
+    ["Globant", "IT Services"],
+    ["Thoughtworks", "IT Consulting"],
+    ["Publicis Sapient", "Digital Consulting"],
+    ["Nagarro", "IT Services"],
+    ["GlobalLogic", "IT Services"],
+    ["Datamatics", "IT Services"],
+    ["Allsec Technologies", "IT Services"],
+    ["ITC Infotech", "IT Services"],
+
+
+    // =========================
+    // CONSULTING
+    // =========================
+
+    ["Deloitte", "Consulting"],
+    ["EY", "Consulting"],
+    ["McKinsey & Company", "Consulting"],
+    ["KPMG", "Consulting"],
+    ["PwC", "Consulting"],
+    ["Bain & Company", "Consulting"],
+    ["BCG", "Consulting"],
+
+
+    // =========================
+    // PRODUCT / TECHNOLOGY
+    // =========================
+
+    ["Microsoft", "Product"],
+    ["Google", "Product"],
+    ["Amazon", "Product"],
+    ["Apple", "Product"],
+    ["IBM", "Technology / Product"],
+    ["Intel", "Product"],
+    ["Qualcomm", "Product"],
+    ["Cisco", "Product"],
+    ["Oracle", "Product"],
+    ["Salesforce", "Product"],
+    ["Adobe", "Product"],
+    ["SAP India", "Product"],
+    ["Meta", "Product"],
+    ["Xiaomi India", "Product"],
+    ["Sony", "Product"],
+    ["Philips", "Product"],
+    ["3M", "Product"],
+
+
+    // =========================
+    // AUTOMOTIVE / ENGINEERING
+    // =========================
+
+    ["Maruti Suzuki India", "Product"],
+    ["Toyota", "Product"],
+    ["Volkswagen", "Product"],
+    ["Siemens", "Product"],
+    ["Bosch", "Product"],
+    ["Honeywell", "Product"],
+    ["ABB", "Product"],
+    ["General Electric", "Product"],
+
+
+    // =========================
+    // FMCG
+    // =========================
+
+    ["Nestlé", "Product"],
+    ["Unilever", "Product"],
+    ["Procter & Gamble (P&G)", "Product"],
+    ["PepsiCo", "Product"],
+    ["Coca-Cola", "Product"],
+    ["L'Oréal", "Product"],
+
+
+    // =========================
+    // HEALTHCARE / PHARMA
+    // =========================
+
+    ["Johnson & Johnson", "Product"],
+    ["Pfizer", "Product"],
+
+
+    // =========================
+    // BANKING / FINANCE
+    // =========================
+
+    ["JPMorgan Chase", "Banking"],
+    ["Goldman Sachs", "Finance"],
+    ["HSBC", "Banking"],
+    ["Citi", "Banking"],
+    ["Visa", "Finance"],
+
+
+    // =========================
+    // ENERGY
+    // =========================
+
+    ["Shell", "Product"]
+
+];
+
+
+/* =====================================================
+   LOAD SAVED DATA
+===================================================== */
+
+let savedData =
+    JSON.parse(
+        localStorage.getItem("companyTracker")
+    ) || {};
+
+
+/* =====================================================
+   CREATE TABLE
+===================================================== */
+
+function createTable() {
+
+    const tbody =
+        document.getElementById("companyBody");
+
+    tbody.innerHTML = "";
+
+
+    companies.forEach((company, index) => {
+
+        const name = company[0];
+
+        const type = company[1];
+
+
+        const data =
+            savedData[name] || {
+
+                checked: false,
+
+                status: "Not Applied",
+
+                remark: ""
+
+            };
+
+
+        const row =
+            document.createElement("tr");
+
+
+        row.dataset.company =
+            name.toLowerCase();
+
+        row.dataset.type =
+            type;
+
+
+        row.innerHTML = `
+
+            <td>
+
+                <input
+                    type="checkbox"
+
+                    ${data.checked ? "checked" : ""}
+
+                    onchange="
+                        updateCheckbox(
+                            '${escapeJS(name)}',
+                            this.checked
+                        )
+                    "
+                >
+
+            </td>
+
+
+            <td>
+                ${index + 1}
+            </td>
+
+
+            <td class="company-name">
+                ${name}
+            </td>
+
+
+            <td>
+
+                <span
+                    class="${getTypeClass(type)}"
+                >
+
+                    ${type}
+
+                </span>
+
+            </td>
+
+
+            <td>
+
+                <select
+                    class="status"
+
+                    onchange="
+                        updateStatus(
+                            '${escapeJS(name)}',
+                            this.value
+                        )
+                    "
+                >
+
+                    <option
+                        value="Not Applied"
+                        ${data.status === "Not Applied"
+                            ? "selected"
+                            : ""}
+                    >
+                        Not Applied
+                    </option>
+
+
+                    <option
+                        value="Applied"
+                        ${data.status === "Applied"
+                            ? "selected"
+                            : ""}
+                    >
+                        Applied
+                    </option>
+
+
+                    <option
+                        value="Interview"
+                        ${data.status === "Interview"
+                            ? "selected"
+                            : ""}
+                    >
+                        Interview
+                    </option>
+
+
+                    <option
+                        value="Selected"
+                        ${data.status === "Selected"
+                            ? "selected"
+                            : ""}
+                    >
+                        Selected
+                    </option>
+
+
+                    <option
+                        value="Rejected"
+                        ${data.status === "Rejected"
+                            ? "selected"
+                            : ""}
+                    >
+                        Rejected
+                    </option>
+
+                </select>
+
+            </td>
+
+
+            <td>
+
+                <textarea
+                    class="remark"
+                    placeholder="Enter remark..."
+                    oninput="
+                        updateRemark(
+                            '${escapeJS(name)}',
+                            this.value
+                        )
+                    "
+                >${escapeHTML(data.remark)}</textarea>
+
+            </td>
+
+        `;
+
+
+        tbody.appendChild(row);
+
+    });
+
+
+    updateDashboard();
+
+    filterTable();
+
+}
+
+
+/* =====================================================
+   ESCAPE FUNCTIONS
+===================================================== */
+
+function escapeJS(value) {
+
+    return value
+        .replace(/\\/g, "\\\\")
+        .replace(/'/g, "\\'");
+
+}
+
+
+function escapeHTML(value) {
+
+    return value
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+
+}
+
+
+/* =====================================================
+   COMPANY TYPE CSS
+===================================================== */
+
+function getTypeClass(type) {
+
+    if (type === "Product") {
+
+        return "product";
+
+    }
+
+
+    if (
+        type === "Banking" ||
+        type === "Finance"
+    ) {
+
+        return "finance";
+
+    }
+
+
+    return "service";
+
+}
+
+
+/* =====================================================
+   CREATE DEFAULT DATA
+===================================================== */
+
+function createDefaultData(name) {
+
+    if (!savedData[name]) {
+
+        savedData[name] = {
+
+            checked: false,
+
+            status: "Not Applied",
+
+            remark: ""
+
+        };
+
+    }
+
+}
+
+
+/* =====================================================
+   CHECKBOX UPDATE
+===================================================== */
+
+function updateCheckbox(
+    name,
+    checked
+) {
+
+    createDefaultData(name);
+
+    savedData[name].checked =
+        checked;
+
+    saveData();
+
+    updateDashboard();
+
+}
+
+
+/* =====================================================
+   STATUS UPDATE
+===================================================== */
+
+function updateStatus(
+    name,
+    status
+) {
+
+    createDefaultData(name);
+
+    savedData[name].status =
+        status;
+
+    saveData();
+
+    updateDashboard();
+
+    filterTable();
+
+}
+
+
+/* =====================================================
+   REMARK UPDATE
+===================================================== */
+
+function updateRemark(
+    name,
+    remark
+) {
+
+    createDefaultData(name);
+
+    savedData[name].remark =
+        remark;
+
+    saveData();
+
+}
+
+
+/* =====================================================
+   SAVE DATA
+===================================================== */
+
+function saveData() {
+
+    localStorage.setItem(
+        "companyTracker",
+        JSON.stringify(savedData)
+    );
+
+
+    document.getElementById(
+        "saveMessage"
+    ).innerText =
+        "✓ Data automatically saved";
+
+}
+
+
+/* =====================================================
+   DASHBOARD
+===================================================== */
+
+function updateDashboard() {
+
+    let selected = 0;
+
+    let applied = 0;
+
+    let interview = 0;
+
+    let jobSelected = 0;
+
+    let rejected = 0;
+
+
+    companies.forEach(company => {
+
+        const name =
+            company[0];
+
+        const data =
+            savedData[name];
+
+
+        if (!data) {
+
+            return;
+
+        }
+
+
+        if (data.checked) {
+
+            selected++;
+
+        }
+
+
+        if (
+            data.status === "Applied"
+        ) {
+
+            applied++;
+
+        }
+
+
+        if (
+            data.status === "Interview"
+        ) {
+
+            interview++;
+
+        }
+
+
+        if (
+            data.status === "Selected"
+        ) {
+
+            jobSelected++;
+
+        }
+
+
+        if (
+            data.status === "Rejected"
+        ) {
+
+            rejected++;
+
+        }
+
+    });
+
+
+    document.getElementById(
+        "totalCount"
+    ).innerText =
+        companies.length;
+
+
+    document.getElementById(
+        "selectedCount"
+    ).innerText =
+        selected;
+
+
+    document.getElementById(
+        "appliedCount"
+    ).innerText =
+        applied;
+
+
+    document.getElementById(
+        "interviewCount"
+    ).innerText =
+        interview;
+
+
+    document.getElementById(
+        "jobSelectedCount"
+    ).innerText =
+        jobSelected;
+
+
+    document.getElementById(
+        "rejectedCount"
+    ).innerText =
+        rejected;
+
+}
+
+
+/* =====================================================
+   SELECT ALL
+===================================================== */
+
+function selectAll() {
+
+    companies.forEach(company => {
+
+        const name =
+            company[0];
+
+        createDefaultData(name);
+
+        savedData[name].checked =
+            true;
+
+    });
+
+
+    saveData();
+
+    createTable();
+
+}
+
+
+/* =====================================================
+   CLEAR ALL DATA
+===================================================== */
+
+function clearAllData() {
+
+    const confirmation =
+        confirm(
+            "Are you sure you want to delete ALL saved selections, statuses and remarks?"
+        );
+
+
+    if (!confirmation) {
+
+        return;
+
+    }
+
+
+    localStorage.removeItem(
+        "companyTracker"
+    );
+
+
+    savedData = {};
+
+
+    createTable();
+
+}
+
+
+/* =====================================================
+   SEARCH + FILTER
+===================================================== */
+
+function filterTable() {
+
+    const search =
+        document.getElementById(
+            "search"
+        ).value.toLowerCase();
+
+
+    const type =
+        document.getElementById(
+            "typeFilter"
+        ).value;
+
+
+    const status =
+        document.getElementById(
+            "statusFilter"
+        ).value;
+
+
+    const rows =
+        document.querySelectorAll(
+            "#companyBody tr"
+        );
+
+
+    rows.forEach(row => {
+
+        const companyName =
+            row.querySelector(
+                ".company-name"
+            ).innerText.toLowerCase();
+
+
+        const companyType =
+            row.dataset.type;
+
+
+        const companyStatus =
+            row.querySelector(
+                ".status"
+            ).value;
+
+
+        const matchesSearch =
+            companyName.includes(
+                search
+            );
+
+
+        const matchesType =
+            type === "All" ||
+            companyType === type;
+
+
+        const matchesStatus =
+            status === "All" ||
+            companyStatus === status;
+
+
+        if (
+            matchesSearch &&
+            matchesType &&
+            matchesStatus
+        ) {
+
+            row.style.display = "";
+
+        } else {
+
+            row.style.display =
+                "none";
+
+        }
+
+    });
+
+}
+
+
+/* =====================================================
+   EXPORT CSV
+===================================================== */
+
+function exportData() {
+
+    let csv =
+        "Company,Company Type,Selected,Status,Remark\n";
+
+
+    companies.forEach(company => {
+
+        const name =
+            company[0];
+
+        const type =
+            company[1];
+
+
+        const data =
+            savedData[name] || {
+
+                checked: false,
+
+                status: "Not Applied",
+
+                remark: ""
+
+            };
+
+
+        const remark =
+            data.remark
+                .replace(/"/g, '""');
+
+
+        csv +=
+            `"${name}","${type}","${data.checked ? "Yes" : "No"}","${data.status}","${remark}"\n`;
+
+    });
+
+
+    const blob =
+        new Blob(
+            [csv],
+            {
+                type:
+                    "text/csv;charset=utf-8;"
+            }
+        );
+
+
+    const url =
+        URL.createObjectURL(blob);
+
+
+    const link =
+        document.createElement("a");
+
+
+    link.href = url;
+
+    link.download =
+        "company_job_tracker.csv";
+
+
+    document.body.appendChild(link);
+
+    link.click();
+
+    document.body.removeChild(link);
+
+
+    URL.revokeObjectURL(url);
+
+}
+
+
+/* =====================================================
+   INITIAL LOAD
+===================================================== */
+
+createTable();
+
+</script>
+
+</body>
+
+</html>
+
